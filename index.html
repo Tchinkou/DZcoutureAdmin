@@ -1,0 +1,1452 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DZCouture — Administration</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#3B0917">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%233B0917'/%3E%3Cpath d='M9 22V10h5c4 0 6 2.4 6 6s-2 6-6 6H9z' fill='none' stroke='%23C9A227' stroke-width='2'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   DZCouture — Administration
+   Identité cohérente avec le site : sidebar grenat, accents gold.
+   ============================================================ */
+:root{
+  --grenat:#5A0F24; --grenat-dark:#3B0917;
+  --gold:#C9A227; --gold-light:#E4C766;
+  --ivoire:#F8F4EC; --noir:#171315;
+  --bg:#F4F1EA; --surface:#FFFFFF; --surface-2:#FBF9F4;
+  --line:rgba(23,19,21,.11); --line-gold:rgba(201,162,39,.38);
+  --muted:rgba(23,19,21,.60);
+  --ok:#2a7846; --warn:#B8860B; --danger:#A4243B;
+  --radius:13px; --shadow:0 1px 2px rgba(23,19,21,.05),0 14px 36px rgba(23,19,21,.07);
+  --serif:"Cormorant Garamond",Georgia,serif; --sans:"Jost",Arial,sans-serif;
+  --side:266px;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--noir);font-family:var(--sans);font-weight:300;font-size:15px;line-height:1.6}
+h1,h2,h3,h4{font-family:var(--serif);font-weight:500;margin:0 0 .4em;line-height:1.15}
+a{color:inherit;text-decoration:none}
+button,input,select,textarea{font:inherit;color:inherit}
+img{max-width:100%;display:block}
+.hidden{display:none !important}
+.muted{color:var(--muted)}
+
+/* ---------- Connexion ---------- */
+.login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;
+  background:radial-gradient(900px 500px at 70% 20%,rgba(201,162,39,.18),transparent 60%),
+             linear-gradient(160deg,var(--grenat-dark),var(--grenat))}
+.login__card{background:var(--ivoire);border-radius:20px;padding:40px;width:100%;max-width:420px;
+  border:1px solid var(--line-gold);box-shadow:0 40px 90px rgba(0,0,0,.35)}
+.login__card h1{font-size:1.9rem;text-align:center;margin-bottom:4px}
+.login__card p{text-align:center;color:var(--muted);font-size:.9rem;margin-top:0}
+
+/* ---------- Structure ---------- */
+.app{display:grid;grid-template-columns:var(--side) 1fr;min-height:100vh}
+.side{background:linear-gradient(180deg,var(--grenat-dark),var(--grenat));color:var(--ivoire);
+  display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+.side__brand{padding:24px 22px;border-bottom:1px solid rgba(201,162,39,.22);display:flex;gap:12px;align-items:center}
+.side__brand svg{height:38px;flex:0 0 auto}
+.side__brand b{font-family:var(--serif);font-size:1.3rem;letter-spacing:.05em;display:block}
+.side__brand span{font-size:.56rem;letter-spacing:.28em;text-transform:uppercase;color:var(--gold-light)}
+.side__nav{padding:14px 12px;flex:1}
+.side__group{font-size:.6rem;letter-spacing:.24em;text-transform:uppercase;color:rgba(248,244,236,.42);padding:16px 12px 6px}
+.side__nav a{display:flex;align-items:center;gap:11px;padding:.62em .85em;border-radius:9px;
+  font-size:.9rem;color:rgba(248,244,236,.82);transition:.18s;position:relative}
+.side__nav a:hover{background:rgba(248,244,236,.09);color:#fff}
+.side__nav a.on{background:rgba(201,162,39,.18);color:#fff;box-shadow:inset 3px 0 0 var(--gold)}
+.side__nav a svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.6;flex:0 0 auto}
+.side__nav a .pill{margin-left:auto;background:var(--gold);color:var(--grenat-dark);border-radius:999px;
+  font-size:.66rem;padding:1px 7px;font-weight:500}
+.side__foot{padding:16px 22px;border-top:1px solid rgba(201,162,39,.22);font-size:.78rem;color:rgba(248,244,236,.6)}
+
+.main{min-width:0;display:flex;flex-direction:column}
+.topbar{background:var(--surface);border-bottom:1px solid var(--line);padding:16px 28px;
+  display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:20}
+.topbar h2{margin:0;font-size:1.5rem}
+.topbar__actions{margin-left:auto;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.content{padding:28px;flex:1}
+.burger{display:none;background:none;border:1px solid var(--line);border-radius:9px;padding:8px 9px;cursor:pointer}
+.burger span{display:block;width:18px;height:1.6px;background:var(--grenat);margin:3.5px 0}
+
+/* ---------- Composants ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5em;padding:.62em 1.25em;
+  border-radius:999px;border:1px solid transparent;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;
+  cursor:pointer;background:none;transition:.22s;white-space:nowrap}
+.btn--primary{background:var(--grenat);color:var(--ivoire);border-color:var(--grenat)}
+.btn--primary:hover{background:var(--grenat-dark)}
+.btn--gold{background:var(--gold);color:var(--grenat-dark);border-color:var(--gold)}
+.btn--gold:hover{background:var(--gold-light)}
+.btn--ghost{border-color:var(--line);color:var(--noir)}
+.btn--ghost:hover{border-color:var(--gold);background:rgba(201,162,39,.08)}
+.btn--danger{border-color:rgba(164,36,59,.4);color:var(--danger)}
+.btn--danger:hover{background:rgba(164,36,59,.08)}
+.btn--xs{padding:.4em .85em;font-size:.7rem}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px;margin-bottom:22px}
+.card__head{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:16px;flex-wrap:wrap}
+.card__head h3{margin:0}
+.grid{display:grid;gap:18px}
+.g2{grid-template-columns:repeat(2,1fr)} .g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)} .g5{grid-template-columns:repeat(5,1fr)}
+
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;position:relative;overflow:hidden}
+.stat::after{content:"";position:absolute;right:-18px;top:-18px;width:74px;height:74px;border-radius:50%;
+  background:radial-gradient(circle,rgba(201,162,39,.18),transparent 70%)}
+.stat b{font-family:var(--serif);font-size:2rem;color:var(--grenat);display:block;line-height:1}
+.stat span{font-size:.66rem;letter-spacing:.17em;text-transform:uppercase;color:var(--muted)}
+
+.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface)}
+table{width:100%;border-collapse:collapse;min-width:640px}
+th{background:var(--surface-2);text-align:left;padding:12px 16px;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:13px 16px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:var(--surface-2)}
+td.actions{white-space:nowrap;text-align:right}
+
+.badge{display:inline-flex;align-items:center;gap:5px;padding:.22em .7em;border-radius:999px;font-size:.68rem;
+  letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--line)}
+.badge--ok{background:rgba(42,120,70,.1);border-color:rgba(42,120,70,.3);color:var(--ok)}
+.badge--pending{background:rgba(201,162,39,.15);border-color:var(--line-gold);color:#8a6d0f}
+.badge--danger{background:rgba(164,36,59,.08);border-color:rgba(164,36,59,.3);color:var(--danger)}
+.badge--gold{background:var(--gold);border-color:var(--gold);color:var(--grenat-dark)}
+.badge--demo{background:rgba(23,19,21,.06);color:var(--muted)}
+
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.field label{font-size:.68rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)}
+.input{width:100%;padding:.7em .95em;border:1px solid var(--line);border-radius:9px;background:var(--surface-2);transition:.2s}
+.input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,162,39,.15);background:#fff}
+textarea.input{min-height:110px;resize:vertical}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.row3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.check{display:flex;align-items:center;gap:9px;margin-bottom:10px;font-size:.92rem}
+.check input{width:17px;height:17px;accent-color:var(--grenat)}
+
+.color-row{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}
+.color-row:last-child{border-bottom:none}
+.color-row label{flex:1;font-size:.9rem}
+.color-row input[type=color]{width:46px;height:34px;border:1px solid var(--line);border-radius:8px;background:none;padding:2px;cursor:pointer}
+.color-row input[type=text]{width:108px;padding:.42em .6em;border:1px solid var(--line);border-radius:8px;font-size:.84rem;background:var(--surface-2)}
+.preview{border-radius:var(--radius);padding:24px;color:#F8F4EC;margin-top:16px}
+.preview h4{font-family:var(--serif);font-size:1.5rem;margin:0 0 6px}
+
+.overlay{position:fixed;inset:0;background:rgba(23,19,21,.6);backdrop-filter:blur(4px);z-index:100;
+  display:none;align-items:flex-start;justify-content:center;padding:28px;overflow-y:auto}
+.overlay.open{display:flex}
+.modal{background:var(--bg);border-radius:18px;width:100%;max-width:720px;border:1px solid var(--line-gold);
+  box-shadow:0 40px 90px rgba(0,0,0,.35);position:relative;animation:pop .28s ease}
+@keyframes pop{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.modal__head{padding:24px 28px 0}
+.modal__body{padding:18px 28px 28px}
+.modal__close{position:absolute;top:14px;right:14px;width:34px;height:34px;border-radius:999px;border:1px solid var(--line);
+  background:var(--surface);cursor:pointer}
+.modal__close:hover{background:var(--grenat);color:var(--ivoire)}
+
+.alert{padding:11px 15px;border-radius:9px;font-size:.87rem;margin-bottom:14px}
+.alert--err{background:rgba(164,36,59,.08);border:1px solid rgba(164,36,59,.28);color:var(--danger)}
+.alert--ok{background:rgba(42,120,70,.08);border:1px solid rgba(42,120,70,.28);color:var(--ok)}
+.alert--info{background:rgba(201,162,39,.1);border:1px solid var(--line-gold);color:#7d6410}
+
+.toast-wrap{position:fixed;bottom:22px;right:22px;z-index:300;display:flex;flex-direction:column;gap:9px}
+.toast{background:var(--noir);color:var(--ivoire);padding:12px 18px;border-radius:10px;border-left:3px solid var(--gold);
+  font-size:.88rem;box-shadow:var(--shadow);max-width:330px;animation:sl .3s ease}
+.toast.err{border-left-color:var(--danger)}
+@keyframes sl{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:none}}
+.empty{text-align:center;padding:42px 18px;color:var(--muted)}
+.search{position:relative;min-width:210px}
+.search .input{padding-left:2.2em}
+.search svg{position:absolute;left:.75em;top:50%;transform:translateY(-50%);width:15px;height:15px;stroke:var(--muted);fill:none;stroke-width:1.8}
+.chip{padding:.35em .85em;border-radius:999px;border:1px solid var(--line);background:var(--surface);font-size:.76rem;cursor:pointer}
+.chip.on{background:var(--grenat);color:var(--ivoire);border-color:var(--grenat)}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.thumb{width:44px;height:44px;border-radius:8px;object-fit:cover;background:var(--surface-2);border:1px solid var(--line);
+  display:flex;align-items:center;justify-content:center;font-family:var(--serif);color:var(--grenat)}
+
+@media (max-width:1100px){ .g5,.g4{grid-template-columns:repeat(2,1fr)} .g3{grid-template-columns:repeat(2,1fr)} }
+@media (max-width:900px){
+  .app{grid-template-columns:1fr}
+  .side{position:fixed;left:0;top:0;bottom:0;width:var(--side);z-index:60;transform:translateX(-100%);transition:.28s}
+  .side.open{transform:none}
+  .burger{display:block}
+  .content{padding:18px}
+  .row2,.row3{grid-template-columns:1fr}
+  .g2,.g3,.g4,.g5{grid-template-columns:1fr}
+}
+@media (max-width:520px){
+  .topbar{flex-wrap:wrap;padding:14px 16px;row-gap:12px}
+  .topbar h2{font-size:1.25rem}
+  .topbar__actions{width:100%;margin-left:0}
+  .search{min-width:0;flex:1}
+  .btn{white-space:normal;max-width:100%;text-align:center}
+}
+</style>
+</head>
+<body>
+
+<!-- ======================= CONNEXION ======================= -->
+<div class="login" id="loginScreen">
+  <form class="login__card" id="adminLogin">
+    <div style="text-align:center;margin-bottom:18px">
+      <svg viewBox="0 0 64 64" style="height:58px;margin:0 auto">
+        <defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#E4C766"/><stop offset="100%" stop-color="#C9A227"/></linearGradient></defs>
+        <circle cx="32" cy="32" r="30" fill="none" stroke="url(#g1)" stroke-width="1.5"/>
+        <path d="M20 44V20h7.5c7 0 11.5 4.6 11.5 12S34.5 44 27.5 44H20z" fill="none" stroke="#5A0F24" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M38 20h10L38 44h10" fill="none" stroke="url(#g1)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <h1>Administration</h1>
+    <p>DZCouture — accès réservé</p>
+    <div id="loginAlert"></div>
+    <div class="field"><label>Email</label><input class="input" type="email" name="email" required autocomplete="email"></div>
+    <div class="field"><label>Mot de passe</label><input class="input" type="password" name="password" required autocomplete="current-password"></div>
+    <button class="btn btn--primary" style="width:100%" type="submit">Se connecter</button>
+    <p style="font-size:.78rem;margin-top:16px">Seuls les comptes dont le rôle est <b>admin</b> peuvent entrer. Le rôle est vérifié côté Supabase.</p>
+  </form>
+</div>
+
+<!-- ======================= APPLICATION ======================= -->
+<div class="app hidden" id="app">
+  <aside class="side" id="side">
+    <div class="side__brand">
+      <svg viewBox="0 0 64 64">
+        <defs><linearGradient id="g2" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#E4C766"/><stop offset="100%" stop-color="#C9A227"/></linearGradient></defs>
+        <circle cx="32" cy="32" r="30" fill="none" stroke="url(#g2)" stroke-width="1.5"/>
+        <path d="M20 44V20h7.5c7 0 11.5 4.6 11.5 12S34.5 44 27.5 44H20z" fill="none" stroke="#F8F4EC" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M38 20h10L38 44h10" fill="none" stroke="url(#g2)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span><b>DZCouture</b><span>Administration</span></span>
+    </div>
+    <nav class="side__nav" id="sideNav"></nav>
+    <div class="side__foot">
+      <div id="adminWho">—</div>
+      <button class="btn btn--ghost btn--xs" id="btnLogout" style="margin-top:8px;color:var(--ivoire);border-color:rgba(248,244,236,.3)">Déconnexion</button>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <button class="burger" id="burger"><span></span><span></span><span></span></button>
+      <h2 id="pageTitle">Tableau de bord</h2>
+      <div class="topbar__actions" id="pageActions"></div>
+    </div>
+    <div class="content" id="content"></div>
+  </div>
+</div>
+
+<div class="overlay" id="modal">
+  <div class="modal">
+    <button class="modal__close" id="modalClose">&times;</button>
+    <div class="modal__head"><h3 id="modalTitle">—</h3></div>
+    <div class="modal__body" id="modalBody"></div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toasts"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script>
+/* ==========================================================================
+   DZCouture — Administration
+   --------------------------------------------------------------------------
+   SÉCURITÉ : ce fichier n'utilise que la clé « anon » publique. Il n'accorde
+   aucun privilège par lui-même : c'est Supabase qui vérifie, via les
+   politiques RLS et la fonction is_admin(), que l'utilisateur connecté a bien
+   le rôle « admin ». Ne placez JAMAIS la clé service_role ici.
+   ========================================================================== */
+
+/* ==========================================================================
+   1. CONFIGURATION (identique à index.html)
+   ========================================================================== */
+const CONFIG = {
+  SUPABASE_URL:      'https://azgeqwtvphurbnamtxhe.supabase.co',
+  // Clé « Publishable » (Settings > API Keys) : elle commence par sb_publishable_
+  // Elle est conçue pour être publique. Ne jamais mettre ici la clé sb_secret_.
+  SUPABASE_ANON_KEY: 'sb_publishable_XTtltXb2iWhO9kHg6ZvJwg_Pzm0VTI2'
+};
+
+let sb = null, ONLINE = false;
+try{
+  if(CONFIG.SUPABASE_URL.startsWith('http') && CONFIG.SUPABASE_ANON_KEY.length > 30 && window.supabase){
+    sb = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY,
+      { auth:{ persistSession:true, autoRefreshToken:true } });
+    ONLINE = true;
+  }
+}catch(e){ console.warn(e); }
+
+/* ==========================================================================
+   2. UTILITAIRES
+   ========================================================================== */
+const $  = (s,r=document)=>r.querySelector(s);
+const $$ = (s,r=document)=>Array.from(r.querySelectorAll(s));
+const esc = v => String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money = n => new Intl.NumberFormat('fr-DZ',{maximumFractionDigits:0}).format(Number(n)||0)+' DZD';
+const dateFr = d => d ? new Date(d).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'}) : '—';
+const slugify = s => (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'')
+  .replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+const uid = () => 'x' + Math.random().toString(36).slice(2,10);
+
+function toast(msg,type){
+  const el=document.createElement('div'); el.className='toast'+(type==='err'?' err':''); el.textContent=msg;
+  $('#toasts').appendChild(el); setTimeout(()=>{el.style.opacity='0';setTimeout(()=>el.remove(),300);},4000);
+}
+function openModal(title, html){
+  $('#modalTitle').textContent = title; $('#modalBody').innerHTML = html;
+  $('#modal').classList.add('open'); document.body.style.overflow='hidden';
+}
+function closeModal(){ $('#modal').classList.remove('open'); document.body.style.overflow=''; }
+$('#modalClose').onclick = closeModal;
+$('#modal').addEventListener('click', e => { if(e.target.id==='modal') closeModal(); });
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
+
+/* Stockage local — mode démonstration uniquement */
+const LS = {
+  key:'dzcouture_admin_v1',
+  all(){ try{ return JSON.parse(localStorage.getItem(this.key)||'{}'); }catch(e){ return {}; } },
+  save(d){ try{ localStorage.setItem(this.key, JSON.stringify(d)); }catch(e){} },
+  table(t){ const d=this.all(); if(!d[t]) { d[t] = (SEED[t]||[]).slice(); this.save(d); } return d[t]; },
+  setTable(t,rows){ const d=this.all(); d[t]=rows; this.save(d); }
+};
+
+/* Jeu de données local (miroir du SQL de démonstration) */
+const SEED = {
+  categories:[
+    {id:'c1',name:'Robes',slug:'robes',position:1,is_active:true},
+    {id:'c2',name:'Pantalons',slug:'pantalons',position:2,is_active:true},
+    {id:'c3',name:'Vestes',slug:'vestes',position:3,is_active:true},
+    {id:'c4',name:'Jupes',slug:'jupes',position:4,is_active:true},
+    {id:'c5',name:'Chemises',slug:'chemises',position:5,is_active:true},
+    {id:'c6',name:'Vêtements modulables',slug:'modulables',position:6,is_active:true},
+    {id:'c7',name:'Haute couture',slug:'haute-couture',position:7,is_active:true},
+    {id:'c8',name:'Sur mesure',slug:'sur-mesure',position:8,is_active:true},
+    {id:'c9',name:'Accessoires',slug:'accessoires',position:9,is_active:true}
+  ],
+  collections:[
+    {id:'col1',name:'Collection Capsule',slug:'collection-capsule',season:'Toutes saisons',is_active:true,is_demo:true,
+     description:'Une garde-robe minimale et modulable.'},
+    {id:'col2',name:'Signature 2026',slug:'signature-2026',season:'2026',is_active:true,is_demo:true,
+     description:'Les pièces emblématiques DZCouture.'}
+  ],
+  products:[
+    {id:'p1',name:'Robe Évolution',slug:'robe-evolution',price:18500,category_id:'c6',collection_id:'col2',
+     material:'Crêpe de soie doublé',is_modular:true,is_featured:true,is_demo:true,status:'approved',availability:'available',
+     colors:['Grenat','Noir','Ivoire'],sizes:['36','38','40','42','44'],
+     description:'La pièce fondatrice : une robe qui se transforme en quatre looks.'},
+    {id:'p2',name:'Robe Signature',slug:'robe-signature',price:22000,category_id:'c7',collection_id:'col2',
+     material:'Crêpe structuré',is_couture:true,is_featured:true,is_demo:true,status:'approved',availability:'on_demand',
+     colors:['Grenat','Noir'],sizes:['36','38','40','42'],description:'Pièce signature en crêpe structuré.'},
+    {id:'p3',name:'Robe Élégance',slug:'robe-elegance',price:16500,category_id:'c1',collection_id:'col2',
+     material:'Mousseline doublée',is_modular:true,is_demo:true,status:'approved',availability:'available',
+     colors:['Ivoire','Grenat'],sizes:['36','38','40','42'],description:'Robe longue fluide, drapé asymétrique.'},
+    {id:'p4',name:'Ensemble Transformation',slug:'ensemble-transformation',price:19500,category_id:'c6',collection_id:'col1',
+     material:'Gabardine légère',is_modular:true,is_featured:true,is_demo:true,status:'approved',availability:'available',
+     colors:['Noir','Ivoire','Grenat'],sizes:['S','M','L','XL'],description:'Ensemble deux pièces convertible.'},
+    {id:'p5',name:'Collection Capsule',slug:'produit-collection-capsule',price:48000,category_id:'c6',collection_id:'col1',
+     material:'Mix matières',is_modular:true,is_demo:true,status:'approved',availability:'on_demand',
+     colors:['Grenat','Ivoire','Noir'],sizes:['S','M','L'],description:'Sélection capsule de 5 pièces combinables.'}
+  ],
+  product_modules:[
+    {id:'m1',product_id:'p1',name:'Manches longues',price_delta:3200,position:1,description:'Manches amovibles.'},
+    {id:'m2',product_id:'p1',name:'Cape',price_delta:4800,position:2,description:'Cape fluide longue.'},
+    {id:'m3',product_id:'p1',name:'Ceinture brodée',price_delta:2500,position:3,description:'Broderie fil gold.'},
+    {id:'m4',product_id:'p1',name:'Jupe supplémentaire',price_delta:6500,position:4,description:'Sur-jupe volumineuse.'},
+    {id:'m5',product_id:'p1',name:'Col montant',price_delta:1800,position:5,description:'Col amovible.'}
+  ],
+  product_configurations:[
+    {id:'k1',product_id:'p1',name:'Look 1 — Sortie',occasion:'quotidien',module_ids:[],position:1,description:'La robe seule.'},
+    {id:'k2',product_id:'p1',name:'Look 2 — Élégant',occasion:'élégant',module_ids:['m1','m3'],position:2,description:'Manches et ceinture.'},
+    {id:'k3',product_id:'p1',name:'Look 3 — Fête',occasion:'fête',module_ids:['m1','m3','m5'],position:3,description:'Manches, ceinture, col.'},
+    {id:'k4',product_id:'p1',name:'Look 4 — Soirée',occasion:'soirée',module_ids:['m2','m4','m3'],position:4,description:'Cape et sur-jupe.'}
+  ],
+  workshops:[
+    {id:'w1',name:'Atelier Démonstration A',slug:'atelier-demo-a',city:'Béjaïa',status:'approved',is_demo:true,
+     specialties:['Sur mesure','Retouches'],description:"Exemple d'atelier partenaire."},
+    {id:'w2',name:'Atelier Démonstration B',slug:'atelier-demo-b',city:'Béjaïa',status:'approved',is_demo:true,
+     specialties:['Haute couture'],description:"Exemple d'atelier partenaire."}
+  ],
+  videos:[
+    {id:'v1',title:'Comment transformer une robe',category:'Tutoriels',url:'',is_published:true,is_demo:true,position:1,
+     description:'Démonstration du principe modulable.'},
+    {id:'v2',title:'Utiliser les modules',category:'Tutoriels',url:'',is_published:true,is_demo:true,position:2,
+     description:'Fixer manches, cape et ceinture.'},
+    {id:'v3',title:'Créer un look',category:'Conseils',url:'',is_published:true,is_demo:true,position:3,
+     description:'Composer une tenue.'},
+    {id:'v4',title:'Organiser sa garde-robe',category:'Conseils',url:'',is_published:true,is_demo:true,position:4,
+     description:'Méthode DZCouture.'}
+  ],
+  profiles:[
+    {id:'u1',full_name:'Compte démo — cliente',role:'client',status:'approved',city:'Béjaïa',email:'cliente@demo.dz',is_demo:true,created_at:'2026-01-12'},
+    {id:'u2',full_name:'Compte démo — couturière',role:'seamstress',status:'pending',city:'Béjaïa',email:'couturiere@demo.dz',is_demo:true,created_at:'2026-02-03'},
+    {id:'u3',full_name:'Compte démo — styliste',role:'stylist',status:'pending',city:'Béjaïa',email:'styliste@demo.dz',is_demo:true,created_at:'2026-02-14'}
+  ],
+  seamstresses:[], stylists:[], suppliers:[], services:[],
+  service_requests:[], conversations:[], reviews:[],
+  contact_messages:[
+    {id:'ct1',name:'Message de démonstration',email:'contact@demo.dz',subject:'Question sur une pièce',
+     message:'Bonjour, la Robe Évolution est-elle disponible en taille 42 ?',status:'new',created_at:'2026-03-02'}
+  ],
+  site_sections:[
+    {id:'s1',key:'hero',title:'Une pièce. Plusieurs styles.',
+     subtitle:"DZCouture réunit clientes, couturières, stylistes, fournisseurs et ateliers autour du vêtement modulable.",
+     is_visible:true,position:1,content:{cta1:'Découvrir les collections',cta2:'Créer mon compte'}},
+    {id:'s2',key:'innovation',title:'Une pièce. Plusieurs possibilités.',
+     subtitle:'Ajoutez ou retirez des modules et la même pièce change de registre.',is_visible:true,position:2,
+     content:{steps:['Robe de base','+ Module','Look élégant','+ Module','Look de soirée']}},
+    {id:'s3',key:'community',title:"Un écosystème, quatre façons d'y entrer",
+     subtitle:'Que vous cherchiez, créiez, conseilliez ou fournissiez, DZCouture vous donne un espace.',is_visible:true,position:3,content:{}},
+    {id:'s4',key:'vip',title:'DZCouture VIP',subtitle:'Un accompagnement personnalisé par un styliste dédié.',is_visible:true,position:4,content:{}}
+  ]
+};
+
+const DEFAULT_SETTINGS = {
+  identity:{ site_name:'DZCouture', slogan:'Une pièce. Plusieurs styles. Votre élégance.',
+             baseline:'Mode, couture et vêtements modulables — Béjaïa, Algérie', year:'2026', logo_url:'', logo_svg:'' },
+  colors:{ primary:'#5A0F24', primary_dark:'#3B0917', gold:'#C9A227', gold_light:'#E4C766',
+           background:'#F8F4EC', text:'#171315', button:'#5A0F24', button_text:'#F8F4EC' },
+  contact:{ phone:'+213 674 50 81 96', email:'imeloulmarina@gmail.com', address:'Béjaïa, Algérie',
+            hours:'Dimanche — Jeudi, 9h — 18h' },
+  social:{ facebook:'', instagram:'', tiktok:'', whatsapp:'', youtube:'' },
+  seo:{ title:'DZCouture — Mode, couture et vêtements modulables à Béjaïa',
+        description:'DZCouture relie clientes, couturières, stylistes, fournisseurs et ateliers autour de vêtements modulables.',
+        keywords:'couture Béjaïa, mode Algérie, vêtements modulables, haute couture, sur mesure', og_image:'' }
+};
+
+/* ==========================================================================
+   3. ACCÈS AUX DONNÉES
+   ========================================================================== */
+const Store = {
+  async list(table, opts = {}){
+    if(ONLINE){
+      let q = sb.from(table).select(opts.select || '*');
+      if(opts.eq) Object.keys(opts.eq).forEach(k => q = q.eq(k, opts.eq[k]));
+      if(opts.order) q = q.order(opts.order, { ascending: opts.asc !== false });
+      let data, error;
+      try{ ({ data, error } = await q); }
+      catch(e){ toast('Connexion à Supabase impossible : '+e.message,'err'); return []; }
+      if(error){ toast(error.message,'err'); return []; }
+      return data || [];
+    }
+    let rows = LS.table(table).slice();
+    if(opts.eq) rows = rows.filter(r => Object.keys(opts.eq).every(k => r[k] === opts.eq[k]));
+    return rows;
+  },
+  async insert(table, row){
+    if(ONLINE){
+      const { data, error } = await sb.from(table).insert(row).select().single();
+      if(error) throw error; return data;
+    }
+    const rows = LS.table(table);
+    const rec = Object.assign({ id:uid(), created_at:new Date().toISOString() }, row);
+    rows.unshift(rec); LS.setTable(table, rows); return rec;
+  },
+  async update(table, id, patch){
+    if(ONLINE){
+      const { error } = await sb.from(table).update(patch).eq('id', id);
+      if(error) throw error; return;
+    }
+    const rows = LS.table(table); const i = rows.findIndex(r=>r.id===id);
+    if(i>-1){ Object.assign(rows[i], patch); LS.setTable(table, rows); }
+  },
+  async remove(table, id){
+    if(ONLINE){
+      const { error } = await sb.from(table).delete().eq('id', id);
+      if(error) throw error; return;
+    }
+    LS.setTable(table, LS.table(table).filter(r=>r.id!==id));
+  },
+  async settings(){
+    if(ONLINE){
+      const { data } = await sb.from('site_settings').select('key,value');
+      const out = JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
+      (data||[]).forEach(r => out[r.key] = Object.assign({}, out[r.key], r.value));
+      return out;
+    }
+    const saved = LS.all().settings;
+    return Object.assign(JSON.parse(JSON.stringify(DEFAULT_SETTINGS)), saved || {});
+  },
+  async saveSettings(key, value){
+    if(ONLINE){
+      const { error } = await sb.from('site_settings').upsert({ key, value, updated_at:new Date().toISOString() });
+      if(error) throw error; return;
+    }
+    const d = LS.all(); d.settings = d.settings || {}; d.settings[key] = value; LS.save(d);
+  },
+  async upload(bucket, file){
+    if(!file) return null;
+    if(file.size > 5*1024*1024){ toast('Fichier trop lourd (5 Mo max).','err'); return null; }
+    if(!ONLINE) return await new Promise(r=>{ const fr=new FileReader(); fr.onload=()=>r(fr.result); fr.readAsDataURL(file); });
+    const path = `${ADMIN.id}/${Date.now()}-${slugify(file.name.replace(/\.[^.]+$/,''))}.${file.name.split('.').pop()}`;
+    const { error } = await sb.storage.from(bucket).upload(path, file, { contentType:file.type });
+    if(error){ toast(error.message,'err'); return null; }
+    return sb.storage.from(bucket).getPublicUrl(path).data.publicUrl;
+  }
+};
+
+let ADMIN = null;      // profil administrateur connecté
+let SETTINGS = null;   // configuration du site
+let CACHE = {};        // caches légers (catégories, collections…)
+
+/* ==========================================================================
+   4. DÉFINITION DES RESSOURCES (CRUD générique)
+   Chaque ressource décrit ses colonnes de tableau et ses champs de formulaire.
+   ========================================================================== */
+const ROLE_LABEL = { client:'Cliente', seamstress:'Couturière', stylist:'Styliste', supplier:'Fournisseur', admin:'Administration' };
+const STATUS_OPTS = [['pending','En attente'],['approved','Approuvé'],['rejected','Refusé'],['suspended','Suspendu']];
+
+function statusBadge(s){
+  const map = { approved:'ok', pending:'pending', rejected:'danger', suspended:'danger',
+                new:'pending', read:'', answered:'ok', archived:'', available:'ok', on_demand:'pending', sold_out:'danger' };
+  const label = { approved:'Approuvé', pending:'En attente', rejected:'Refusé', suspended:'Suspendu',
+                  new:'Nouveau', read:'Lu', answered:'Répondu', archived:'Archivé',
+                  available:'Disponible', on_demand:'Sur commande', sold_out:'Épuisé' };
+  const k = map[s] === undefined ? '' : map[s];
+  return `<span class="badge ${k?'badge--'+k:''}">${esc(label[s]||s||'—')}</span>`;
+}
+const demoBadge = r => r.is_demo ? ' <span class="badge badge--demo">Démo</span>' : '';
+
+const RES = {
+
+  products: {
+    table:'products', title:'Produits', icon:'box',
+    columns:[
+      {k:'name', label:'Produit', render:r=>`<b>${esc(r.name)}</b>${demoBadge(r)}<br><small class="muted">${esc(r.slug||'')}</small>`},
+      {k:'category_id', label:'Catégorie', render:r=>esc(nameOf('categories', r.category_id))},
+      {k:'price', label:'Prix', render:r=>money(r.price)},
+      {k:'flags', label:'Type', render:r=>[r.is_modular?'<span class="badge badge--gold">Modulable</span>':'',
+                                           r.is_couture?'<span class="badge">Couture</span>':'',
+                                           r.is_featured?'<span class="badge">Vedette</span>':''].join(' ')},
+      {k:'status', label:'Statut', render:r=>statusBadge(r.status)}
+    ],
+    fields:[
+      {k:'name', label:'Nom', type:'text', required:true},
+      {k:'slug', label:'Identifiant URL (laisser vide pour générer)', type:'text'},
+      {k:'description', label:'Description', type:'textarea'},
+      {k:'story', label:'Histoire de la pièce', type:'textarea'},
+      {k:'price', label:'Prix (DZD)', type:'number', required:true},
+      {k:'compare_price', label:'Prix barré', type:'number'},
+      {k:'category_id', label:'Catégorie', type:'ref', ref:'categories'},
+      {k:'collection_id', label:'Collection', type:'ref', ref:'collections'},
+      {k:'cover_url', label:'Image principale', type:'image', bucket:'products'},
+      {k:'video_url', label:'Vidéo (URL)', type:'text'},
+      {k:'material', label:'Matière', type:'text'},
+      {k:'colors', label:'Couleurs', type:'tags'},
+      {k:'sizes', label:'Tailles', type:'tags'},
+      {k:'features', label:'Caractéristiques', type:'tags'},
+      {k:'availability', label:'Disponibilité', type:'select',
+       opts:[['available','Disponible'],['on_demand','Sur commande'],['sold_out','Épuisé']]},
+      {k:'is_modular', label:'Vêtement modulable', type:'bool'},
+      {k:'is_couture', label:'Haute couture', type:'bool'},
+      {k:'is_custom', label:'Sur mesure', type:'bool'},
+      {k:'is_featured', label:'Mettre en vedette', type:'bool'},
+      {k:'is_demo', label:'Donnée de démonstration', type:'bool'},
+      {k:'status', label:'Statut', type:'select', opts:STATUS_OPTS},
+      {k:'position', label:'Ordre d’affichage', type:'number'}
+    ],
+    beforeSave(row){ if(!row.slug) row.slug = slugify(row.name) + '-' + Math.random().toString(36).slice(2,6); return row; },
+    extra: r => `<button class="btn btn--gold btn--xs" data-modules="${esc(r.id)}">Modules &amp; looks</button>`
+  },
+
+  categories: {
+    table:'categories', title:'Catégories', icon:'tag',
+    columns:[
+      {k:'name', label:'Nom', render:r=>`<b>${esc(r.name)}</b><br><small class="muted">${esc(r.slug||'')}</small>`},
+      {k:'position', label:'Ordre'},
+      {k:'is_active', label:'Active', render:r=>r.is_active!==false?'<span class="badge badge--ok">Oui</span>':'<span class="badge">Non</span>'}
+    ],
+    fields:[
+      {k:'name', label:'Nom', type:'text', required:true},
+      {k:'slug', label:'Identifiant URL', type:'text'},
+      {k:'description', label:'Description', type:'textarea'},
+      {k:'image_url', label:'Image', type:'image', bucket:'products'},
+      {k:'position', label:'Ordre', type:'number'},
+      {k:'is_active', label:'Active', type:'bool'}
+    ],
+    beforeSave(row){ if(!row.slug) row.slug = slugify(row.name); return row; }
+  },
+
+  collections: {
+    table:'collections', title:'Collections', icon:'layers',
+    columns:[
+      {k:'name', label:'Collection', render:r=>`<b>${esc(r.name)}</b>${demoBadge(r)}`},
+      {k:'season', label:'Saison'},
+      {k:'position', label:'Ordre'},
+      {k:'is_active', label:'Active', render:r=>r.is_active!==false?'<span class="badge badge--ok">Oui</span>':'<span class="badge">Non</span>'}
+    ],
+    fields:[
+      {k:'name', label:'Nom', type:'text', required:true},
+      {k:'slug', label:'Identifiant URL', type:'text'},
+      {k:'description', label:'Description', type:'textarea'},
+      {k:'season', label:'Saison', type:'text'},
+      {k:'cover_url', label:'Visuel', type:'image', bucket:'products'},
+      {k:'position', label:'Ordre', type:'number'},
+      {k:'is_active', label:'Active', type:'bool'},
+      {k:'is_demo', label:'Donnée de démonstration', type:'bool'}
+    ],
+    beforeSave(row){ if(!row.slug) row.slug = slugify(row.name); return row; }
+  },
+
+  workshops: {
+    table:'workshops', title:'Ateliers', icon:'home',
+    columns:[
+      {k:'name', label:'Atelier', render:r=>`<b>${esc(r.name)}</b>${demoBadge(r)}`},
+      {k:'city', label:'Ville'},
+      {k:'specialties', label:'Spécialités', render:r=>(r.specialties||[]).map(s=>`<span class="badge">${esc(s)}</span>`).join(' ')},
+      {k:'status', label:'Statut', render:r=>statusBadge(r.status)}
+    ],
+    fields:[
+      {k:'name', label:'Nom', type:'text', required:true},
+      {k:'slug', label:'Identifiant URL', type:'text'},
+      {k:'description', label:'Description', type:'textarea'},
+      {k:'city', label:'Ville', type:'text'},
+      {k:'address', label:'Adresse', type:'text'},
+      {k:'specialties', label:'Spécialités', type:'tags'},
+      {k:'services', label:'Services', type:'tags'},
+      {k:'contact_phone', label:'Téléphone', type:'text'},
+      {k:'contact_email', label:'Email', type:'text'},
+      {k:'status', label:'Statut', type:'select', opts:STATUS_OPTS},
+      {k:'position', label:'Ordre', type:'number'},
+      {k:'is_demo', label:'Donnée de démonstration', type:'bool'}
+    ],
+    beforeSave(row){ if(!row.slug) row.slug = slugify(row.name); return row; }
+  },
+
+  videos: {
+    table:'videos', title:'Vidéos', icon:'play',
+    columns:[
+      {k:'title', label:'Titre', render:r=>`<b>${esc(r.title)}</b>${demoBadge(r)}`},
+      {k:'category', label:'Catégorie'},
+      {k:'url', label:'Lien', render:r=>r.url?`<a href="${esc(r.url)}" target="_blank" rel="noopener">Ouvrir</a>`:'<span class="muted">—</span>'},
+      {k:'is_published', label:'Publiée', render:r=>r.is_published?'<span class="badge badge--ok">Oui</span>':'<span class="badge">Non</span>'}
+    ],
+    fields:[
+      {k:'title', label:'Titre', type:'text', required:true},
+      {k:'description', label:'Description', type:'textarea'},
+      {k:'url', label:'URL de la vidéo (YouTube, Vimeo, Storage)', type:'text'},
+      {k:'thumbnail_url', label:'Miniature', type:'image', bucket:'videos'},
+      {k:'category', label:'Catégorie', type:'select',
+       opts:[['Tutoriels','Tutoriels'],['Conseils','Conseils'],['Coulisses','Coulisses'],['Collections','Collections']]},
+      {k:'duration', label:'Durée', type:'text'},
+      {k:'is_published', label:'Publiée', type:'bool'},
+      {k:'is_demo', label:'Donnée de démonstration', type:'bool'},
+      {k:'position', label:'Ordre', type:'number'}
+    ]
+  },
+
+  services: {
+    table:'services', title:'Services & VIP', icon:'star',
+    columns:[
+      {k:'title', label:'Service', render:r=>`<b>${esc(r.title)}</b>`},
+      {k:'category', label:'Catégorie'},
+      {k:'price_from', label:'À partir de', render:r=>r.price_from?money(r.price_from):'Sur devis'},
+      {k:'is_vip', label:'VIP', render:r=>r.is_vip?'<span class="badge badge--gold">VIP</span>':''},
+      {k:'is_active', label:'Actif', render:r=>r.is_active!==false?'<span class="badge badge--ok">Oui</span>':'<span class="badge">Non</span>'}
+    ],
+    fields:[
+      {k:'title', label:'Intitulé', type:'text', required:true},
+      {k:'description', label:'Description', type:'textarea'},
+      {k:'category', label:'Catégorie', type:'text'},
+      {k:'price_from', label:'Tarif à partir de', type:'number'},
+      {k:'price_to', label:'Tarif jusqu’à', type:'number'},
+      {k:'duration', label:'Durée / délai', type:'text'},
+      {k:'is_vip', label:'Service VIP', type:'bool'},
+      {k:'is_active', label:'Actif', type:'bool'},
+      {k:'position', label:'Ordre', type:'number'}
+    ],
+    beforeSave(row){ if(ONLINE && !row.provider_id) row.provider_id = ADMIN.id; return row; }
+  },
+
+  site_sections: {
+    table:'site_sections', title:'Sections du site', icon:'file',
+    columns:[
+      {k:'key', label:'Clé', render:r=>`<code>${esc(r.key)}</code>`},
+      {k:'title', label:'Titre', render:r=>`<b>${esc(r.title||'')}</b>`},
+      {k:'is_visible', label:'Visible', render:r=>r.is_visible!==false?'<span class="badge badge--ok">Oui</span>':'<span class="badge">Non</span>'},
+      {k:'position', label:'Ordre'}
+    ],
+    fields:[
+      {k:'key', label:'Clé technique (hero, innovation, community, vip…)', type:'text', required:true},
+      {k:'title', label:'Titre', type:'text'},
+      {k:'subtitle', label:'Sous-titre', type:'textarea'},
+      {k:'image_url', label:'Image', type:'image', bucket:'logos'},
+      {k:'content', label:'Contenu additionnel (JSON : boutons, étapes…)', type:'json'},
+      {k:'is_visible', label:'Visible', type:'bool'},
+      {k:'position', label:'Ordre', type:'number'}
+    ]
+  },
+
+  reviews: {
+    table:'reviews', title:'Avis', icon:'star', noCreate:true,
+    columns:[
+      {k:'rating', label:'Note', render:r=>'★'.repeat(r.rating||0)+'☆'.repeat(5-(r.rating||0))},
+      {k:'target_type', label:'Cible', render:r=>`${esc(r.target_type)}`},
+      {k:'comment', label:'Commentaire', render:r=>esc((r.comment||'').slice(0,90))},
+      {k:'status', label:'Statut', render:r=>statusBadge(r.status)},
+      {k:'created_at', label:'Date', render:r=>dateFr(r.created_at)}
+    ],
+    fields:[
+      {k:'status', label:'Statut de modération', type:'select', opts:STATUS_OPTS},
+      {k:'comment', label:'Commentaire', type:'textarea'}
+    ]
+  },
+
+  contact_messages: {
+    table:'contact_messages', title:'Messages de contact', icon:'mail', noCreate:true,
+    columns:[
+      {k:'name', label:'Expéditeur', render:r=>`<b>${esc(r.name)}</b><br><small class="muted">${esc(r.email||'')}</small>`},
+      {k:'subject', label:'Sujet'},
+      {k:'message', label:'Message', render:r=>esc((r.message||'').slice(0,90))+'…'},
+      {k:'status', label:'Statut', render:r=>statusBadge(r.status)},
+      {k:'created_at', label:'Reçu le', render:r=>dateFr(r.created_at)}
+    ],
+    fields:[
+      {k:'status', label:'Statut', type:'select',
+       opts:[['new','Nouveau'],['read','Lu'],['answered','Répondu'],['archived','Archivé']]}
+    ]
+  },
+
+  service_requests: {
+    table:'service_requests', title:'Demandes', icon:'file', noCreate:true,
+    columns:[
+      {k:'title', label:'Demande', render:r=>`<b>${esc(r.title||'Demande')}</b><br><small class="muted">${esc((r.message||'').slice(0,70))}</small>`},
+      {k:'type', label:'Type'},
+      {k:'budget', label:'Budget', render:r=>r.budget?money(r.budget):'—'},
+      {k:'status', label:'Statut', render:r=>statusBadge(r.status)},
+      {k:'created_at', label:'Date', render:r=>dateFr(r.created_at)}
+    ],
+    fields:[
+      {k:'status', label:'Statut', type:'select',
+       opts:[['pending','En attente'],['accepted','Acceptée'],['refused','Refusée'],
+             ['in_progress','En cours'],['completed','Terminée'],['cancelled','Annulée']]}
+    ]
+  }
+};
+
+/* Profils professionnels : même écran, table différente */
+['seamstresses','stylists','suppliers'].forEach(t => {
+  const isSup = t === 'suppliers';
+  RES[t] = {
+    table:t, icon:'user',
+    title: t==='seamstresses' ? 'Couturières' : t==='stylists' ? 'Stylistes' : 'Fournisseurs',
+    columns:[
+      {k:'name', label:'Profil', render:r=>`<b>${esc(r.company_name || (r.profiles&&(r.profiles.full_name||r.profiles.display_name)) || 'Profil')}</b>
+        <br><small class="muted">${esc(r.headline||r.description||'')}</small>`},
+      {k:'city', label:'Ville'},
+      {k:'specialties', label:'Spécialités', render:r=>(r.specialties||[]).slice(0,3).map(s=>`<span class="badge">${esc(s)}</span>`).join(' ')},
+      {k:'status', label:'Modération', render:r=>statusBadge(r.status)}
+    ],
+    select:'*, profiles(full_name, display_name, email, avatar_url)',
+    noCreate:true,
+    fields:[
+      isSup ? {k:'company_name', label:'Entreprise', type:'text'} : {k:'headline', label:'Accroche', type:'text'},
+      isSup ? {k:'description', label:'Description', type:'textarea'} : {k:'biography', label:'Biographie', type:'textarea'},
+      {k:'city', label:'Ville', type:'text'},
+      {k:'specialties', label:'Spécialités', type:'tags'},
+      isSup ? {k:'fabric_types', label:'Types de tissus', type:'tags'} : {k:'services_types', label:'Types de services', type:'tags'},
+      {k:'contact_phone', label:'Téléphone', type:'text'},
+      {k:'contact_email', label:'Email', type:'text'},
+      {k:'status', label:'Modération', type:'select', opts:STATUS_OPTS},
+      {k:'is_featured', label:'Mettre en avant', type:'bool'}
+    ],
+    moderation:true
+  };
+});
+
+/* Utilisateurs (profils) */
+RES.profiles = {
+  table:'profiles', title:'Utilisateurs', icon:'users', noCreate:true,
+  columns:[
+    {k:'full_name', label:'Utilisateur', render:r=>`<b>${esc(r.full_name||r.display_name||'—')}</b>${demoBadge(r)}
+      <br><small class="muted">${esc(r.email||'')}</small>`},
+    {k:'role', label:'Rôle', render:r=>`<span class="badge ${r.role==='admin'?'badge--gold':''}">${esc(ROLE_LABEL[r.role]||r.role)}</span>`},
+    {k:'city', label:'Ville'},
+    {k:'status', label:'Statut', render:r=>statusBadge(r.status)},
+    {k:'is_vip', label:'VIP', render:r=>r.is_vip?'<span class="badge badge--gold">VIP</span>':''},
+    {k:'created_at', label:'Inscrit le', render:r=>dateFr(r.created_at)}
+  ],
+  fields:[
+    {k:'full_name', label:'Nom complet', type:'text'},
+    {k:'display_name', label:'Nom affiché', type:'text'},
+    {k:'phone', label:'Téléphone', type:'text'},
+    {k:'city', label:'Ville', type:'text'},
+    {k:'role', label:'Rôle', type:'select',
+     opts:[['client','Cliente'],['seamstress','Couturière'],['stylist','Styliste'],['supplier','Fournisseur'],['admin','Administration']],
+     hint:"Attribuer le rôle « admin » donne tous les droits d'administration."},
+    {k:'status', label:'Statut', type:'select', opts:STATUS_OPTS},
+    {k:'is_vip', label:'Cliente VIP', type:'bool'}
+  ],
+  moderation:true
+};
+
+function nameOf(resKey, id){
+  const rows = CACHE[resKey] || [];
+  const r = rows.find(x => x.id === id);
+  return r ? (r.name || r.title) : '—';
+}
+
+/* ==========================================================================
+   5. NAVIGATION
+   ========================================================================== */
+const ICON = {
+  home:'<path d="M3 10 12 3l9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/>',
+  box:'<path d="M3 7h18v13H3zM3 7l3-4h12l3 4M12 11v5"/>',
+  tag:'<path d="M20 12 12 20l-8-8V4h8z"/><circle cx="8" cy="8" r="1.4"/>',
+  layers:'<path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/>',
+  users:'<circle cx="9" cy="8" r="3.4"/><path d="M2 21c0-3.9 3.1-7 7-7s7 3.1 7 7"/><path d="M17 11a3 3 0 1 0-1-5.8"/>',
+  user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/>',
+  play:'<circle cx="12" cy="12" r="9"/><path d="M10 8l6 4-6 4z"/>',
+  star:'<path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>',
+  mail:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',
+  file:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/>',
+  palette:'<circle cx="12" cy="12" r="9"/><circle cx="8.5" cy="10" r="1.2"/><circle cx="12" cy="7.5" r="1.2"/><circle cx="15.5" cy="10" r="1.2"/>',
+  cog:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/>',
+  chat:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+  db:'<ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/>'
+};
+
+const NAV = [
+  ['Pilotage', [
+    ['dashboard','Tableau de bord','home']
+  ]],
+  ['Catalogue', [
+    ['products','Produits','box'],
+    ['categories','Catégories','tag'],
+    ['collections','Collections','layers']
+  ]],
+  ['Communauté', [
+    ['profiles','Utilisateurs','users'],
+    ['seamstresses','Couturières','user'],
+    ['stylists','Stylistes','user'],
+    ['suppliers','Fournisseurs','user'],
+    ['workshops','Ateliers','home']
+  ]],
+  ['Contenu', [
+    ['videos','Vidéos','play'],
+    ['services','Services & VIP','star'],
+    ['site_sections','Sections du site','file']
+  ]],
+  ['Relation client', [
+    ['service_requests','Demandes','file'],
+    ['contact_messages','Messages','mail'],
+    ['reviews','Avis','star']
+  ]],
+  ['Configuration', [
+    ['identity','Identité & logo','cog'],
+    ['colors','Couleurs','palette'],
+    ['contact','Contact & réseaux','mail'],
+    ['seo','SEO','file'],
+    ['demo','Données de démonstration','db']
+  ]]
+];
+
+function renderNav(active, counts){
+  $('#sideNav').innerHTML = NAV.map(([group, items]) => `
+    <div class="side__group">${esc(group)}</div>
+    ${items.map(([key,label,icon])=>`
+      <a href="#/${key}" class="${active===key?'on':''}">
+        <svg viewBox="0 0 24 24">${ICON[icon]||ICON.home}</svg>${esc(label)}
+        ${counts && counts[key] ? `<span class="pill">${counts[key]}</span>` : ''}
+      </a>`).join('')}`).join('');
+}
+
+/* ==========================================================================
+   6. TABLEAU GÉNÉRIQUE
+   ========================================================================== */
+async function listPage(key){
+  const res = RES[key];
+  const rows = await Store.list(res.table, { select: res.select, order: res.order || null });
+  $('#pageTitle').textContent = res.title;
+  $('#pageActions').innerHTML = `
+    <div class="search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input class="input" id="q" placeholder="Rechercher…"></div>
+    ${res.moderation?`<div class="chips">
+      <span class="chip on" data-f="">Tous</span>
+      <span class="chip" data-f="pending">En attente</span>
+      <span class="chip" data-f="approved">Approuvés</span>
+      <span class="chip" data-f="suspended">Suspendus</span></div>`:''}
+    ${res.noCreate?'':`<button class="btn btn--primary" id="btnCreate">Ajouter</button>`}`;
+
+  const paint = () => {
+    const q = ($('#q')?$('#q').value:'').toLowerCase().trim();
+    const f = $('.chip.on') ? $('.chip.on').dataset.f : '';
+    const list = rows.filter(r => {
+      if(f && r.status !== f) return false;
+      if(!q) return true;
+      return JSON.stringify(r).toLowerCase().includes(q);
+    });
+    $('#content').innerHTML = list.length ? `
+      <div class="table-wrap"><table>
+        <thead><tr>${res.columns.map(c=>`<th>${esc(c.label)}</th>`).join('')}<th></th></tr></thead>
+        <tbody>${list.map(r=>`<tr>
+          ${res.columns.map(c=>`<td>${c.render ? c.render(r) : esc(r[c.k]==null?'—':r[c.k])}</td>`).join('')}
+          <td class="actions">
+            ${res.extra ? res.extra(r) : ''}
+            ${res.moderation && r.status !== 'approved' ? `<button class="btn btn--gold btn--xs" data-approve="${esc(r.id)}">Approuver</button>`:''}
+            ${res.moderation && r.status === 'approved' ? `<button class="btn btn--ghost btn--xs" data-suspend="${esc(r.id)}">Suspendre</button>`:''}
+            <button class="btn btn--ghost btn--xs" data-edit="${esc(r.id)}">Modifier</button>
+            <button class="btn btn--danger btn--xs" data-del="${esc(r.id)}">Supprimer</button>
+          </td></tr>`).join('')}</tbody>
+      </table></div>
+      <p class="muted" style="margin-top:12px;font-size:.84rem">${list.length} élément${list.length>1?'s':''}</p>`
+    : `<div class="card"><div class="empty"><h3>Aucun élément</h3>
+        <p>${res.noCreate ? "Cette liste se remplit depuis le site public." : "Ajoutez un premier élément avec le bouton « Ajouter »."}</p></div></div>`;
+
+    $$('[data-edit]').forEach(b => b.onclick = () => formModal(key, rows.find(r=>r.id===b.dataset.edit)));
+    $$('[data-del]').forEach(b => b.onclick = async () => {
+      if(!confirm('Supprimer définitivement cet élément ?')) return;
+      try{ await Store.remove(res.table, b.dataset.del); toast('Élément supprimé.'); listPage(key); }
+      catch(e){ toast(e.message,'err'); }
+    });
+    $$('[data-approve]').forEach(b => b.onclick = async () => {
+      await Store.update(res.table, b.dataset.approve, { status:'approved' }); toast('Profil approuvé.'); listPage(key);
+    });
+    $$('[data-suspend]').forEach(b => b.onclick = async () => {
+      await Store.update(res.table, b.dataset.suspend, { status:'suspended' }); toast('Profil suspendu.'); listPage(key);
+    });
+    $$('[data-modules]').forEach(b => b.onclick = () => modulesModal(b.dataset.modules));
+  };
+
+  paint();
+  if($('#q')) $('#q').oninput = paint;
+  $$('.chip').forEach(c => c.onclick = () => { $$('.chip').forEach(x=>x.classList.remove('on')); c.classList.add('on'); paint(); });
+  if($('#btnCreate')) $('#btnCreate').onclick = () => formModal(key, null);
+}
+
+/* ---------- Formulaire générique ---------- */
+function fieldHTML(f, row){
+  const v = row ? row[f.k] : undefined;
+  const id = 'f_' + f.k;
+  const hint = f.hint ? `<small class="muted" style="font-size:.76rem">${esc(f.hint)}</small>` : '';
+  switch(f.type){
+    case 'textarea':
+      return `<div class="field"><label>${esc(f.label)}</label><textarea class="input" id="${id}">${esc(v||'')}</textarea>${hint}</div>`;
+    case 'number':
+      return `<div class="field"><label>${esc(f.label)}</label><input class="input" type="number" step="any" id="${id}" value="${v==null?'':esc(v)}">${hint}</div>`;
+    case 'bool':
+      return `<div class="check"><input type="checkbox" id="${id}" ${v?'checked':''}><label for="${id}">${esc(f.label)}</label></div>`;
+    case 'select':
+      return `<div class="field"><label>${esc(f.label)}</label><select class="input" id="${id}">
+        ${f.opts.map(([val,lab])=>`<option value="${esc(val)}" ${v===val?'selected':''}>${esc(lab)}</option>`).join('')}</select>${hint}</div>`;
+    case 'ref':
+      return `<div class="field"><label>${esc(f.label)}</label><select class="input" id="${id}">
+        <option value="">—</option>
+        ${(CACHE[f.ref]||[]).map(o=>`<option value="${esc(o.id)}" ${v===o.id?'selected':''}>${esc(o.name||o.title)}</option>`).join('')}
+        </select>${hint}</div>`;
+    case 'tags':
+      return `<div class="field"><label>${esc(f.label)} <span class="muted">(séparés par des virgules)</span></label>
+        <input class="input" id="${id}" value="${esc((v||[]).join(', '))}">${hint}</div>`;
+    case 'image':
+      return `<div class="field"><label>${esc(f.label)}</label>
+        <input class="input" id="${id}" placeholder="URL de l'image" value="${esc(v||'')}">
+        <input class="input" type="file" id="${id}_file" accept="image/*" style="margin-top:8px">
+        ${v?`<img src="${esc(v)}" alt="" style="margin-top:8px;max-height:110px;border-radius:9px">`:''}${hint}</div>`;
+    case 'json':
+      return `<div class="field"><label>${esc(f.label)}</label>
+        <textarea class="input" id="${id}" style="font-family:monospace;font-size:.85rem">${esc(JSON.stringify(v||{},null,2))}</textarea>${hint}</div>`;
+    default:
+      return `<div class="field"><label>${esc(f.label)}</label><input class="input" id="${id}" value="${esc(v==null?'':v)}" ${f.required?'required':''}>${hint}</div>`;
+  }
+}
+
+function formModal(key, row){
+  const res = RES[key];
+  openModal(`${row?'Modifier':'Ajouter'} — ${res.title}`, `
+    <form id="genericForm">
+      ${res.fields.map(f=>fieldHTML(f,row)).join('')}
+      <div style="display:flex;gap:10px;margin-top:18px">
+        <button class="btn btn--primary" type="submit">Enregistrer</button>
+        <button class="btn btn--ghost" type="button" id="cancelBtn">Annuler</button>
+      </div>
+    </form>`);
+  $('#cancelBtn').onclick = closeModal;
+  $('#genericForm').onsubmit = async e => {
+    e.preventDefault();
+    const out = {};
+    for(const f of res.fields){
+      const el = $('#f_' + f.k);
+      if(!el) continue;
+      if(f.type === 'bool') out[f.k] = el.checked;
+      else if(f.type === 'number') out[f.k] = el.value === '' ? null : Number(el.value);
+      else if(f.type === 'tags') out[f.k] = el.value.split(',').map(s=>s.trim()).filter(Boolean);
+      else if(f.type === 'json'){ try{ out[f.k] = JSON.parse(el.value||'{}'); }catch(err){ toast('JSON invalide : '+f.label,'err'); throw err; } }
+      else if(f.type === 'image'){
+        const file = $('#f_'+f.k+'_file').files[0];
+        out[f.k] = file ? (await Store.upload(f.bucket||'products', file)) || el.value : el.value;
+      }
+      else if(f.type === 'ref') out[f.k] = el.value || null;
+      else out[f.k] = el.value;
+    }
+    const payload = res.beforeSave ? res.beforeSave(out) : out;
+    try{
+      if(row) await Store.update(res.table, row.id, payload);
+      else await Store.insert(res.table, payload);
+      closeModal(); toast('Enregistré.'); await loadCaches(); listPage(key);
+    }catch(err){ toast(err.message || 'Enregistrement impossible.','err'); }
+  };
+}
+
+/* ---------- Modules & configurations d'un produit ---------- */
+async function modulesModal(productId){
+  const [mods, confs] = await Promise.all([
+    Store.list('product_modules', { eq:{ product_id:productId } }),
+    Store.list('product_configurations', { eq:{ product_id:productId } })
+  ]);
+  const prod = (CACHE.products||[]).find(p=>p.id===productId) || {};
+  openModal(`Modules & looks — ${prod.name||''}`, `
+    <p class="muted" style="font-size:.9rem">Les modules sont les éléments amovibles (manches, cape, ceinture…).
+      Une configuration est une combinaison de modules qui donne un look nommé.</p>
+
+    <h4 style="margin-top:18px">Modules</h4>
+    <div id="modList"></div>
+    <form id="modForm" style="border:1px solid var(--line-gold);border-radius:11px;padding:16px;margin-top:12px;background:var(--surface-2)">
+      <div class="row3">
+        <div class="field"><label>Nom du module</label><input class="input" name="name" required placeholder="Manches longues"></div>
+        <div class="field"><label>Supplément (DZD)</label><input class="input" type="number" name="price_delta" value="0"></div>
+        <div class="field"><label>Ordre</label><input class="input" type="number" name="position" value="1"></div>
+      </div>
+      <div class="field"><label>Description</label><input class="input" name="description"></div>
+      <button class="btn btn--primary btn--xs" type="submit">Ajouter le module</button>
+    </form>
+
+    <h4 style="margin-top:26px">Configurations (looks)</h4>
+    <div id="confList"></div>
+    <form id="confForm" style="border:1px solid var(--line-gold);border-radius:11px;padding:16px;margin-top:12px;background:var(--surface-2)">
+      <div class="row2">
+        <div class="field"><label>Nom du look</label><input class="input" name="name" required placeholder="Look 2 — Élégant"></div>
+        <div class="field"><label>Occasion</label><input class="input" name="occasion" placeholder="élégant"></div>
+      </div>
+      <div class="field"><label>Description</label><input class="input" name="description"></div>
+      <div class="field"><label>Modules inclus</label><div id="modChecks"></div></div>
+      <button class="btn btn--primary btn--xs" type="submit">Ajouter la configuration</button>
+    </form>`);
+
+  const paint = () => {
+    $('#modList').innerHTML = mods.length ? mods.map(m=>`
+      <div style="display:flex;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)">
+        <div style="flex:1"><b>${esc(m.name)}</b> <span class="muted">${esc(m.description||'')}</span></div>
+        <span class="badge badge--gold">+ ${money(m.price_delta||0)}</span>
+        <button class="btn btn--danger btn--xs" data-delmod="${esc(m.id)}">Retirer</button></div>`).join('')
+      : '<p class="muted">Aucun module.</p>';
+    $('#confList').innerHTML = confs.length ? confs.map(c=>`
+      <div style="display:flex;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)">
+        <div style="flex:1"><b>${esc(c.name)}</b> <span class="muted">${esc(c.occasion||'')} — ${(c.module_ids||[]).length} module(s)</span></div>
+        <button class="btn btn--danger btn--xs" data-delconf="${esc(c.id)}">Retirer</button></div>`).join('')
+      : '<p class="muted">Aucune configuration.</p>';
+    $('#modChecks').innerHTML = mods.length ? mods.map(m=>`
+      <label class="check"><input type="checkbox" value="${esc(m.id)}"> ${esc(m.name)}</label>`).join('')
+      : '<span class="muted">Ajoutez d’abord des modules.</span>';
+    $$('[data-delmod]').forEach(b => b.onclick = async () => {
+      await Store.remove('product_modules', b.dataset.delmod);
+      mods.splice(mods.findIndex(m=>m.id===b.dataset.delmod),1); paint();
+    });
+    $$('[data-delconf]').forEach(b => b.onclick = async () => {
+      await Store.remove('product_configurations', b.dataset.delconf);
+      confs.splice(confs.findIndex(c=>c.id===b.dataset.delconf),1); paint();
+    });
+  };
+  paint();
+
+  $('#modForm').onsubmit = async e => {
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    try{
+      const rec = await Store.insert('product_modules', {
+        product_id:productId, name:fd.get('name'), description:fd.get('description'),
+        price_delta:Number(fd.get('price_delta')||0), position:Number(fd.get('position')||1) });
+      mods.push(rec || { id:uid(), name:fd.get('name'), price_delta:Number(fd.get('price_delta')||0) });
+      e.target.reset(); paint(); toast('Module ajouté.');
+    }catch(err){ toast(err.message,'err'); }
+  };
+  $('#confForm').onsubmit = async e => {
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    const ids = $$('#modChecks input:checked').map(i=>i.value);
+    try{
+      const rec = await Store.insert('product_configurations', {
+        product_id:productId, name:fd.get('name'), occasion:fd.get('occasion'),
+        description:fd.get('description'), module_ids:ids, position:confs.length+1 });
+      confs.push(rec || { id:uid(), name:fd.get('name'), module_ids:ids });
+      e.target.reset(); paint(); toast('Configuration ajoutée.');
+    }catch(err){ toast(err.message,'err'); }
+  };
+}
+
+/* ==========================================================================
+   7. TABLEAU DE BORD
+   ========================================================================== */
+async function dashboard(){
+  $('#pageTitle').textContent = 'Tableau de bord';
+  $('#pageActions').innerHTML = `<a class="btn btn--ghost" href="./index.html" target="_blank" rel="noopener">Voir le site</a>`;
+
+  const [profiles, products, requests, messages, reviews, pros1, pros2, pros3] = await Promise.all([
+    Store.list('profiles'), Store.list('products'), Store.list('service_requests'),
+    Store.list('contact_messages'), Store.list('reviews'),
+    Store.list('seamstresses'), Store.list('stylists'), Store.list('suppliers')
+  ]);
+  const count = (arr,f) => arr.filter(f).length;
+  const pendingPros = count(profiles, p=>p.status==='pending' && p.role!=='client')
+                    + count(pros1,p=>p.status==='pending') + count(pros2,p=>p.status==='pending') + count(pros3,p=>p.status==='pending');
+
+  $('#content').innerHTML = `
+  <div class="grid g5" style="margin-bottom:22px">
+    <div class="stat"><b>${profiles.length}</b><span>Utilisateurs</span></div>
+    <div class="stat"><b>${count(profiles,p=>p.role==='client')}</b><span>Clientes</span></div>
+    <div class="stat"><b>${count(profiles,p=>p.role==='seamstress')}</b><span>Couturières</span></div>
+    <div class="stat"><b>${count(profiles,p=>p.role==='stylist')}</b><span>Stylistes</span></div>
+    <div class="stat"><b>${count(profiles,p=>p.role==='supplier')}</b><span>Fournisseurs</span></div>
+  </div>
+  <div class="grid g4" style="margin-bottom:22px">
+    <div class="stat"><b>${products.length}</b><span>Produits</span></div>
+    <div class="stat"><b>${count(requests,r=>r.status==='pending')}</b><span>Demandes en attente</span></div>
+    <div class="stat"><b>${count(messages,m=>m.status==='new')}</b><span>Messages non lus</span></div>
+    <div class="stat"><b>${count(reviews,r=>r.status==='pending')}</b><span>Avis à modérer</span></div>
+  </div>
+
+  ${pendingPros ? `<div class="alert alert--info">
+    <b>${pendingPros}</b> profil(s) professionnel(s) attendent votre validation.
+    <a href="#/profiles" style="text-decoration:underline">Voir les utilisateurs</a></div>` : ''}
+
+  <div class="grid g2">
+    <div class="card">
+      <div class="card__head"><h3>Derniers inscrits</h3><a class="btn btn--ghost btn--xs" href="#/profiles">Gérer</a></div>
+      ${profiles.slice(0,6).map(p=>`
+        <div style="display:flex;gap:11px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)">
+          <div class="thumb">${esc((p.full_name||'?')[0]||'?')}</div>
+          <div style="flex:1"><b>${esc(p.full_name||p.email||'—')}</b><br>
+            <small class="muted">${esc(ROLE_LABEL[p.role]||p.role)} · ${dateFr(p.created_at)}</small></div>
+          ${statusBadge(p.status)}
+        </div>`).join('') || '<p class="muted">Aucun utilisateur.</p>'}
+    </div>
+    <div class="card">
+      <div class="card__head"><h3>Produits récents</h3><a class="btn btn--ghost btn--xs" href="#/products">Gérer</a></div>
+      ${products.slice(0,6).map(p=>`
+        <div style="display:flex;gap:11px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)">
+          <div class="thumb">${p.cover_url?`<img src="${esc(p.cover_url)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:8px">`:'◆'}</div>
+          <div style="flex:1"><b>${esc(p.name)}</b>${demoBadge(p)}<br><small class="muted">${money(p.price)}</small></div>
+          ${statusBadge(p.status)}
+        </div>`).join('') || '<p class="muted">Aucun produit.</p>'}
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card__head"><h3>Raccourcis</h3></div>
+    <div class="grid g4">
+      <a class="btn btn--primary" href="#/products">Ajouter un produit</a>
+      <a class="btn btn--ghost" href="#/site_sections">Modifier les textes du site</a>
+      <a class="btn btn--ghost" href="#/colors">Changer les couleurs</a>
+      <a class="btn btn--ghost" href="#/demo">Gérer les données de démo</a>
+    </div>
+  </div>`;
+}
+
+/* ==========================================================================
+   8. CONFIGURATION DU SITE
+   ========================================================================== */
+async function settingsPage(section){
+  SETTINGS = await Store.settings();
+  const S = SETTINGS;
+
+  if(section === 'identity'){
+    $('#pageTitle').textContent = 'Identité & logo';
+    $('#pageActions').innerHTML = '';
+    $('#content').innerHTML = `
+    <div class="card"><h3>Identité de la marque</h3>
+      <form id="setForm">
+        <div class="row2">
+          <div class="field"><label>Nom du site</label><input class="input" id="s_site_name" value="${esc(S.identity.site_name)}"></div>
+          <div class="field"><label>Année</label><input class="input" id="s_year" value="${esc(S.identity.year)}"></div>
+        </div>
+        <div class="field"><label>Slogan</label><input class="input" id="s_slogan" value="${esc(S.identity.slogan)}"></div>
+        <div class="field"><label>Accroche secondaire</label><input class="input" id="s_baseline" value="${esc(S.identity.baseline)}"></div>
+        <div class="field"><label>Logo — image (PNG/SVG)</label>
+          <input class="input" id="s_logo_url" placeholder="URL du logo" value="${esc(S.identity.logo_url||'')}">
+          <input class="input" type="file" id="s_logo_file" accept="image/*" style="margin-top:8px">
+          ${S.identity.logo_url?`<img src="${esc(S.identity.logo_url)}" style="margin-top:10px;max-height:80px">`:''}
+        </div>
+        <div class="field"><label>Logo — code SVG intégré (prioritaire sur l'image)</label>
+          <textarea class="input" id="s_logo_svg" style="font-family:monospace;font-size:.82rem">${esc(S.identity.logo_svg||'')}</textarea>
+          <small class="muted" style="font-size:.76rem">Laissez vide pour conserver le logo temporaire livré avec le site.</small>
+        </div>
+        <button class="btn btn--primary" type="submit">Enregistrer</button>
+      </form>
+    </div>`;
+    $('#setForm').onsubmit = async e => {
+      e.preventDefault();
+      const file = $('#s_logo_file').files[0];
+      const logo_url = file ? (await Store.upload('logos', file)) || $('#s_logo_url').value : $('#s_logo_url').value;
+      await Store.saveSettings('identity', {
+        site_name:$('#s_site_name').value, year:$('#s_year').value, slogan:$('#s_slogan').value,
+        baseline:$('#s_baseline').value, logo_url, logo_svg:$('#s_logo_svg').value });
+      toast('Identité enregistrée.'); settingsPage('identity');
+    };
+    return;
+  }
+
+  if(section === 'colors'){
+    $('#pageTitle').textContent = 'Couleurs du site';
+    $('#pageActions').innerHTML = `<button class="btn btn--ghost" id="resetColors">Rétablir la palette DZCouture</button>`;
+    const rows = [
+      ['primary','Couleur principale (grenat)'],
+      ['primary_dark','Grenat sombre'],
+      ['gold','Gold principal'],
+      ['gold_light','Gold clair'],
+      ['background','Couleur de fond (ivoire)'],
+      ['text','Couleur du texte'],
+      ['button','Couleur des boutons'],
+      ['button_text','Texte des boutons']
+    ];
+    $('#content').innerHTML = `
+    <div class="card"><h3>Palette</h3>
+      <p class="muted" style="font-size:.9rem">Ces couleurs pilotent l'ensemble du site public. Le grenat porte l'identité,
+        le gold reste réservé aux détails : bordures, titres, boutons et icônes.</p>
+      <form id="colForm">
+        ${rows.map(([k,label])=>`
+          <div class="color-row">
+            <label for="c_${k}">${esc(label)}</label>
+            <input type="text" id="t_${k}" value="${esc(S.colors[k])}">
+            <input type="color" id="c_${k}" value="${esc(S.colors[k])}">
+          </div>`).join('')}
+        <button class="btn btn--primary" type="submit" style="margin-top:16px">Enregistrer la palette</button>
+      </form>
+    </div>
+    <div class="card"><h3>Aperçu</h3>
+      <div class="preview" id="preview">
+        <h4 id="pvTitle">Une pièce. Plusieurs styles.</h4>
+        <p id="pvText" style="margin:0 0 14px">Aperçu de l'identité visuelle appliquée au site public.</p>
+        <span id="pvBtn" style="display:inline-block;padding:.7em 1.6em;border-radius:999px;font-size:.78rem;letter-spacing:.14em;text-transform:uppercase">Découvrir</span>
+        <span id="pvBtn2" style="display:inline-block;padding:.7em 1.6em;border-radius:999px;font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;margin-left:10px;border:1px solid">Créer un compte</span>
+      </div>
+    </div>`;
+    const sync = () => {
+      const c = {}; rows.forEach(([k]) => c[k] = $('#t_'+k).value);
+      const pv = $('#preview');
+      pv.style.background = `linear-gradient(150deg, ${c.primary_dark}, ${c.primary})`;
+      pv.style.color = c.background;
+      $('#pvTitle').style.color = c.gold_light;
+      $('#pvBtn').style.background = c.gold; $('#pvBtn').style.color = c.primary_dark;
+      $('#pvBtn2').style.borderColor = c.gold; $('#pvBtn2').style.color = c.background;
+      return c;
+    };
+    rows.forEach(([k]) => {
+      $('#c_'+k).oninput = () => { $('#t_'+k).value = $('#c_'+k).value; sync(); };
+      $('#t_'+k).oninput = () => { try{ $('#c_'+k).value = $('#t_'+k).value; }catch(e){} sync(); };
+    });
+    sync();
+    $('#colForm').onsubmit = async e => {
+      e.preventDefault();
+      await Store.saveSettings('colors', sync());
+      toast('Palette enregistrée — le site public l’applique au prochain chargement.');
+    };
+    $('#resetColors').onclick = async () => {
+      await Store.saveSettings('colors', DEFAULT_SETTINGS.colors);
+      toast('Palette DZCouture rétablie.'); settingsPage('colors');
+    };
+    return;
+  }
+
+  if(section === 'contact'){
+    $('#pageTitle').textContent = 'Contact & réseaux sociaux';
+    $('#pageActions').innerHTML = '';
+    $('#content').innerHTML = `
+    <div class="card"><h3>Coordonnées</h3>
+      <form id="ctForm">
+        <div class="row2">
+          <div class="field"><label>Téléphone</label><input class="input" id="k_phone" value="${esc(S.contact.phone)}"></div>
+          <div class="field"><label>Email</label><input class="input" id="k_email" value="${esc(S.contact.email)}"></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label>Adresse</label><input class="input" id="k_address" value="${esc(S.contact.address)}"></div>
+          <div class="field"><label>Horaires</label><input class="input" id="k_hours" value="${esc(S.contact.hours)}"></div>
+        </div>
+        <h3 style="margin-top:20px">Réseaux sociaux</h3>
+        <div class="row2">
+          <div class="field"><label>Facebook</label><input class="input" id="k_facebook" value="${esc(S.social.facebook||'')}"></div>
+          <div class="field"><label>Instagram</label><input class="input" id="k_instagram" value="${esc(S.social.instagram||'')}"></div>
+        </div>
+        <div class="row3">
+          <div class="field"><label>TikTok</label><input class="input" id="k_tiktok" value="${esc(S.social.tiktok||'')}"></div>
+          <div class="field"><label>WhatsApp</label><input class="input" id="k_whatsapp" value="${esc(S.social.whatsapp||'')}"></div>
+          <div class="field"><label>YouTube</label><input class="input" id="k_youtube" value="${esc(S.social.youtube||'')}"></div>
+        </div>
+        <button class="btn btn--primary" type="submit">Enregistrer</button>
+      </form>
+    </div>`;
+    $('#ctForm').onsubmit = async e => {
+      e.preventDefault();
+      await Store.saveSettings('contact', { phone:$('#k_phone').value, email:$('#k_email').value,
+        address:$('#k_address').value, hours:$('#k_hours').value });
+      await Store.saveSettings('social', { facebook:$('#k_facebook').value, instagram:$('#k_instagram').value,
+        tiktok:$('#k_tiktok').value, whatsapp:$('#k_whatsapp').value, youtube:$('#k_youtube').value });
+      toast('Coordonnées enregistrées.');
+    };
+    return;
+  }
+
+  if(section === 'seo'){
+    $('#pageTitle').textContent = 'Référencement (SEO)';
+    $('#pageActions').innerHTML = '';
+    $('#content').innerHTML = `
+    <div class="card"><h3>Métadonnées</h3>
+      <form id="seoForm">
+        <div class="field"><label>Titre de la page (title)</label><input class="input" id="o_title" value="${esc(S.seo.title||'')}"></div>
+        <div class="field"><label>Meta description</label><textarea class="input" id="o_desc">${esc(S.seo.description||'')}</textarea></div>
+        <div class="field"><label>Mots-clés</label><input class="input" id="o_kw" value="${esc(S.seo.keywords||'')}"></div>
+        <div class="field"><label>Image de partage (Open Graph)</label>
+          <input class="input" id="o_og" value="${esc(S.seo.og_image||'')}">
+          <input class="input" type="file" id="o_og_file" accept="image/*" style="margin-top:8px"></div>
+        <button class="btn btn--primary" type="submit">Enregistrer</button>
+      </form>
+      <p class="muted" style="font-size:.84rem;margin-top:14px">Le site public intègre déjà les balises Open Graph,
+        Schema.org (ClothingStore), les titres H1/H2/H3 et un contenu orienté « couture, mode, vêtements modulables, Béjaïa ».</p>
+    </div>`;
+    $('#seoForm').onsubmit = async e => {
+      e.preventDefault();
+      const file = $('#o_og_file').files[0];
+      const og_image = file ? (await Store.upload('logos', file)) || $('#o_og').value : $('#o_og').value;
+      await Store.saveSettings('seo', { title:$('#o_title').value, description:$('#o_desc').value,
+        keywords:$('#o_kw').value, og_image });
+      toast('SEO enregistré.');
+    };
+    return;
+  }
+
+  if(section === 'demo'){
+    $('#pageTitle').textContent = 'Données de démonstration';
+    $('#pageActions').innerHTML = '';
+    const [prods, cols, works, vids] = await Promise.all([
+      Store.list('products'), Store.list('collections'), Store.list('workshops'), Store.list('videos')
+    ]);
+    const demo = [...prods, ...cols, ...works, ...vids].filter(r=>r.is_demo);
+    $('#content').innerHTML = `
+    <div class="card">
+      <h3>Contenus marqués « démonstration »</h3>
+      <p class="muted" style="font-size:.92rem">Les pièces fictives (Robe Évolution, Robe Signature, Robe Élégance,
+        Ensemble Transformation, Collection Capsule), les ateliers d'exemple et les vidéos d'illustration servent à montrer
+        le fonctionnement de la plateforme. Supprimez-les quand le vrai contenu est en place.</p>
+      <div class="alert alert--info">Aucun professionnel réel n'a été inventé : les annuaires se remplissent uniquement
+        avec les comptes créés puis validés depuis cette administration.</div>
+      <div class="table-wrap" style="margin-top:14px"><table>
+        <thead><tr><th>Élément</th><th>Type</th><th></th></tr></thead>
+        <tbody>${demo.map(r=>`<tr>
+          <td><b>${esc(r.name||r.title)}</b></td>
+          <td>${esc(r.price!=null?'Produit':r.season!=null?'Collection':r.url!==undefined?'Vidéo':'Atelier')}</td>
+          <td class="actions"><span class="badge badge--demo">Démo</span></td></tr>`).join('')
+          || '<tr><td colspan="3" class="muted">Aucune donnée de démonstration.</td></tr>'}</tbody>
+      </table></div>
+      <button class="btn btn--danger" id="purgeDemo" style="margin-top:16px">Supprimer toutes les données de démonstration</button>
+    </div>`;
+    $('#purgeDemo').onclick = async () => {
+      if(!confirm('Supprimer définitivement tous les contenus marqués « démonstration » ?')) return;
+      for(const t of ['products','collections','workshops','videos']){
+        const rows = await Store.list(t);
+        for(const r of rows.filter(x=>x.is_demo)) await Store.remove(t, r.id);
+      }
+      toast('Données de démonstration supprimées.'); settingsPage('demo');
+    };
+    return;
+  }
+}
+
+/* ==========================================================================
+   9. ROUTEUR
+   ========================================================================== */
+async function loadCaches(){
+  CACHE.categories  = await Store.list('categories');
+  CACHE.collections = await Store.list('collections');
+  CACHE.products    = await Store.list('products');
+}
+
+const SETTINGS_PAGES = ['identity','colors','contact','seo','demo'];
+
+async function route(){
+  if(!ADMIN) return;
+  const key = (location.hash || '#/dashboard').replace('#/','') || 'dashboard';
+  renderNav(key);
+  $('#side').classList.remove('open');
+  try{
+    if(key === 'dashboard') await dashboard();
+    else if(SETTINGS_PAGES.includes(key)) await settingsPage(key);
+    else if(RES[key]) await listPage(key);
+    else await dashboard();
+  }catch(e){
+    console.error(e);
+    $('#content').innerHTML = `<div class="card"><h3>Erreur</h3><p class="muted">${esc(e.message||'')}</p></div>`;
+  }
+}
+window.addEventListener('hashchange', route);
+
+/* ==========================================================================
+   10. AUTHENTIFICATION ADMINISTRATEUR
+   ========================================================================== */
+async function enter(profile){
+  ADMIN = profile;
+  $('#loginScreen').classList.add('hidden');
+  $('#app').classList.remove('hidden');
+  $('#adminWho').innerHTML = `<b>${esc(profile.full_name || profile.email || 'Administrateur')}</b><br>
+    <span style="font-size:.72rem">${ONLINE?'Connecté à Supabase':'Mode démonstration (local)'}</span>`;
+  await loadCaches();
+  if(!location.hash) location.hash = '#/dashboard';
+  await route();
+}
+
+$('#adminLogin').onsubmit = async e => {
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const alert = $('#loginAlert');
+  alert.innerHTML = '';
+
+  if(!ONLINE){
+    alert.innerHTML = `<div class="alert alert--info">Supabase n'est pas configuré : ouverture de l'administration
+      en mode démonstration. Les modifications restent dans ce navigateur.</div>`;
+    setTimeout(()=>enter({ id:'demo-admin', full_name:'Administrateur (démo)', email:fd.get('email'), role:'admin' }), 900);
+    return;
+  }
+
+  let data, error;
+  try{
+    ({ data, error } = await sb.auth.signInWithPassword({ email:fd.get('email'), password:fd.get('password') }));
+  }catch(e){
+    alert.innerHTML = `<div class="alert alert--err">Connexion à Supabase impossible.
+      Vérifiez l'URL et la clé publishable en haut du fichier, ainsi que votre connexion internet.</div>`;
+    return;
+  }
+  if(error){ alert.innerHTML = `<div class="alert alert--err">Identifiants incorrects.</div>`; return; }
+  let prof = null;
+  try{ ({ data:prof } = await sb.from('profiles').select('*').eq('id', data.user.id).single()); }
+  catch(e){ prof = null; }
+  if(!prof || prof.role !== 'admin'){
+    await sb.auth.signOut();
+    alert.innerHTML = `<div class="alert alert--err">Ce compte n'a pas le rôle administrateur.</div>`;
+    return;
+  }
+  enter(prof);
+};
+
+$('#btnLogout').onclick = async () => {
+  if(ONLINE) await sb.auth.signOut();
+  ADMIN = null;
+  $('#app').classList.add('hidden');
+  $('#loginScreen').classList.remove('hidden');
+};
+
+$('#burger').onclick = () => $('#side').classList.toggle('open');
+
+/* Session déjà ouverte ? */
+(async function init(){
+  if(!ONLINE) return;
+  try{
+    const { data } = await sb.auth.getSession();
+    if(data && data.session){
+      const { data:prof } = await sb.from('profiles').select('*').eq('id', data.session.user.id).single();
+      if(prof && prof.role === 'admin') enter(prof);
+    }
+  }catch(e){ console.warn('Supabase injoignable :', e.message); }
+})();
+</script>
+</body>
+</html>
