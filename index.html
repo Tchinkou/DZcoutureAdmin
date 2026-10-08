@@ -1081,7 +1081,7 @@ async function modulesModal(productId){
    ========================================================================== */
 async function dashboard(){
   $('#pageTitle').textContent = 'Tableau de bord';
-  $('#pageActions').innerHTML = `<a class="btn btn--ghost" href="./index.html" target="_blank" rel="noopener">Voir le site</a>`;
+  $('#pageActions').innerHTML = `<a class="btn btn--ghost" href="https://tchinkou.github.io/DZcouture/" target="_blank" rel="noopener">Voir le site</a>`;
 
   const [profiles, products, requests, messages, reviews, pros1, pros2, pros3] = await Promise.all([
     Store.list('profiles'), Store.list('products'), Store.list('service_requests'),
